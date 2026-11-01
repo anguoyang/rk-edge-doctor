@@ -8,8 +8,9 @@
 
 Offline health checks for Rockchip boards, starting with RK3588/RK3588S. Finding
 missing NPU devices, unreadable drivers, memory pressure and overheating should
-not require installing a diagnostic stack. v0.1 implements `board` with Python
-3.9+ and the standard library only.
+not require installing a diagnostic stack. `board` and (since v0.2) `model` —
+RKNN model diagnosis with CPU-fallback detection — run on Python 3.9+ and the
+standard library only.
 
 From this repository, run one command without installation:
 
@@ -47,7 +48,7 @@ from a **real RK3588 board** (Ubuntu 22.04, kernel 6.1, rknpu driver 0.9.8,
 PYTHONPATH=src python3 -m rkdoctor --version
 PYTHONPATH=src python3 -m rkdoctor board
 PYTHONPATH=src python3 -m rkdoctor board --root tests/fixtures/fake_rk3588 --html examples/fixture.html
-PYTHONPATH=src python3 -m rkdoctor model
+PYTHONPATH=src python3 -m rkdoctor model model.rknn --json model-report.json --html model-report.html
 PYTHONPATH=src python3 -m rkdoctor rtsp
 ```
 
@@ -57,8 +58,10 @@ for an offline installation). Running from source above needs no packages.
 
 `board` exits 0 after a completed report, including a `CRITICAL` report; inspect
 the JSON verdict for acceptance decisions. Report-writing errors exit 1, CLI
-usage errors exit 2. `model` and `rtsp` print one English and one Chinese planned
-line and exit 3. `--version` exits 0. Create output parent directories first.
+usage errors exit 2. `model` exits 0 whenever a report is generated — including
+an `UNKNOWN` report when librknnrt or the model is unusable — and 2 for usage
+errors such as a missing file. `rtsp` prints a planned line and exits 3.
+`--version` exits 0. Create output parent directories first.
 
 `--root DIR` redirects `/proc`, `/sys`, `/dev` and `/etc` reads. Runtime-library
 searches in `/usr` and `/lib` are redirected too, and host `ldconfig` is disabled
@@ -122,8 +125,11 @@ Rockchip library. CI runs pytest on Python 3.9 and 3.12.
 ## Roadmap
 
 - v0.1: board checks and offline reports.
-- v0.2: model checks, CPU fallback operators, p50/p95, ONNX/RKNN differences;
-  reserved verdicts: `NPU_ONLY / MIXED / CPU_HEAVY / UNKNOWN`.
+- v0.2 (current): model diagnosis — `rkdoctor model` runs the model on the NPU
+  through the system librknnrt (no extra packages), lists operators that fall
+  back to CPU, measures p50/p95 latency from the runtime's own counters, and
+  gives a verdict: `NPU_ONLY / MIXED / CPU_HEAVY / UNKNOWN`. Optional `--onnx`
+  compares outputs against the source ONNX model when onnxruntime is present.
 - v0.3: RTSP connection, actual codec/resolution/frame rate, frame interval
   jitter, freezes, reconnects and snapshots.
 

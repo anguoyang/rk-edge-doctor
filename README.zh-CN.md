@@ -3,8 +3,9 @@
 ![RK Edge Doctor](assets/banner.png)
 
 面向 Rockchip 板卡的离线体检工具，先支持 RK3588/RK3588S。用于检查 NPU
-设备缺失、驱动不可读、内存不足和温度过高等问题。v0.1 只实现 `board`，
-运行仅需 Python 3.9+ 标准库，无第三方运行依赖。
+设备缺失、驱动不可读、内存不足和温度过高等问题。`board` 体检与（v0.2 起）
+`model` 模型诊断（CPU 回退检测）均已实现，运行仅需 Python 3.9+ 标准库，
+无第三方运行依赖。
 
 在仓库根目录直接运行，不需要安装包：
 
@@ -29,7 +30,7 @@ PYTHONPATH=src python3 -m rkdoctor board --json examples/report.json --html exam
 PYTHONPATH=src python3 -m rkdoctor --version
 PYTHONPATH=src python3 -m rkdoctor board
 PYTHONPATH=src python3 -m rkdoctor board --root tests/fixtures/fake_rk3588 --html examples/fixture.html
-PYTHONPATH=src python3 -m rkdoctor model
+PYTHONPATH=src python3 -m rkdoctor model model.rknn --json model-report.json --html model-report.html
 PYTHONPATH=src python3 -m rkdoctor rtsp
 ```
 
@@ -38,8 +39,9 @@ PYTHONPATH=src python3 -m rkdoctor rtsp
 输出文件的父目录需要事先存在。
 
 `board` 完成报告返回 0，即使 verdict 为 CRITICAL；自动验收应读取 JSON
-中的 verdict。写报告失败返回 1，参数错误返回 2。`model`/`rtsp` 分别预留
-v0.2/v0.3 接口，仅打印英文一行、中文一行的 planned 说明，返回 3。
+中的 verdict。写报告失败返回 1，参数错误返回 2。`model` 只要生成了报告就
+返回 0（包括 librknnrt 不可用时的 UNKNOWN 报告），文件缺失等用法错误返回 2。
+`rtsp` 预留 v0.3 接口，打印 planned 说明返回 3。
 
 `--root DIR` 将 `/proc`、`/sys`、`/dev`、`/etc` 的探测重定向到 DIR；
 `/usr`、`/lib` 中的运行库搜索也重定向，不调用开发机的 ldconfig。
@@ -97,8 +99,10 @@ PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -
 ## 路线图
 
 - v0.1：board 体检与离线报告。
-- v0.2：model 检查、CPU 回退算子清单、p50/p95、ONNX/RKNN 差异；
-  预留 `NPU_ONLY / MIXED / CPU_HEAVY / UNKNOWN` 判定词。
+- v0.2（当前）：model 诊断——`rkdoctor model` 经系统 librknnrt 真跑模型
+  （无需额外装包），列出 CPU 回退算子、用 runtime 自身计数测 p50/p95 延迟，
+  给出 `NPU_ONLY / MIXED / CPU_HEAVY / UNKNOWN` 判定；可选 `--onnx` 在装有
+  onnxruntime 时与源 ONNX 做输出漂移对比。
 - v0.3：RTSP 连接、实际 codec/分辨率/帧率、帧间隔抖动、冻结、重连、快照。
 
 RK Edge Doctor 是与 Site AI Gateway 关联的开源项目：https://site-ai-gateway.com/open-source/rk-edge-doctor/

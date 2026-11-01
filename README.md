@@ -111,6 +111,23 @@ Measured results for popular public models live in the
 YOLOv8s-seg on RK3588 so far, all `NPU_ONLY`; MIXED/CPU_HEAVY reports from
 custom conversions are very welcome.
 
+## Conversion trio (`rkdoctor convert`)
+
+Standing on the official RKNN Toolkit2 — never replacing it:
+
+- `convert check model.onnx [--target rk3588]` — pre-flight: a pure-stdlib
+  ONNX structure reader (opset, shapes, op histogram) checks dynamic
+  dimensions, control-flow operators (Loop/If/Scan cannot convert to a
+  static RKNN graph), operators known to need attention, and
+  quantization-sensitive tails. Verdict: `READY / RISKY / LIKELY_TO_FAIL`.
+- `convert recipe model.onnx [--quantize int8] [--dataset list.txt]` —
+  generates a ready-to-run Toolkit2 conversion script (config, pinned
+  `input_size_list` from the check, build, export) for your own
+  environment. rkdoctor generates; the official Toolkit converts.
+- `convert verify model.rknn [--onnx model.onnx]` — post-conversion
+  acceptance: the `model` diagnosis (fallback, latency, drift) framed as
+  the verification step of the trio.
+
 ## RTSP acceptance checks (`rkdoctor rtsp`)
 
 A pure-stdlib RTSP client (no ffmpeg/ffprobe needed) opens the stream over UDP
@@ -153,12 +170,13 @@ Rockchip library. CI runs pytest on Python 3.9 and 3.12.
   back to CPU, measures p50/p95 latency from the runtime's own counters, and
   gives a verdict: `NPU_ONLY / MIXED / CPU_HEAVY / UNKNOWN`. Optional `--onnx`
   compares outputs against the source ONNX model when onnxruntime is present.
-- v0.3 (current): RTSP acceptance — `rkdoctor rtsp` opens a camera stream with
+- v0.3: RTSP acceptance — `rkdoctor rtsp` opens a camera stream with
   a pure-stdlib client, measures frame rate / loss / jitter / first frame /
   timestamp health, optionally spot-checks decoding (black/frozen), and gives
   a verdict: `HEALTHY / DEGRADED / BROKEN`.
-- v0.4 (planned): conversion trio around the official RKNN Toolkit —
-  pre-conversion checks, recipe generation, post-conversion verification.
+- v0.4 (current): conversion trio around the official RKNN Toolkit —
+  `convert check` (ONNX pre-flight), `convert recipe` (Toolkit2 script
+  generation), `convert verify` (post-conversion acceptance).
 
 RK Edge Doctor is an open-source project associated with Site AI Gateway: https://site-ai-gateway.com/open-source/rk-edge-doctor/
 

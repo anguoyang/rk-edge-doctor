@@ -1,5 +1,29 @@
 # Changelog
 
+## v0.4.0 (2026-11-02)
+
+- `rkdoctor convert` — the conversion trio, standing on the official RKNN
+  Toolkit2 (it never converts anything itself):
+  - `convert check model.onnx` — pre-flight check with a pure-stdlib ONNX
+    structure parser (protobuf wire format; no `onnx` package needed):
+    opset range, dynamic input dimensions, control-flow operators
+    (Loop/If/Scan → cannot convert to a static graph), operators known to
+    need attention in Toolkit2 conversions, quantization-sensitive tails,
+    weights volume. Verdict `READY` / `RISKY` / `LIKELY_TO_FAIL`, schema 1
+    JSON (`kind: "convert-check"`) + HTML reports.
+  - `convert recipe model.onnx` — generates a ready-to-run Toolkit2
+    conversion script for your own environment: target platform, int8
+    quantization config and calibration dataset when requested, pinned
+    `input_size_list` taken from the ONNX inputs, and explicit notes when
+    inputs are dynamic.
+  - `convert verify model.rknn` — post-conversion acceptance step reusing
+    the `model` diagnosis (CPU fallback, PERF latency, ONNX drift).
+- Validated against a real-world export: Ultralytics YOLOv8n ONNX
+  (PyTorch exporter, opset 20, 233 nodes) parses correctly and yields an
+  honest `RISKY` (opset above the commonly used range + a Resize op),
+  with a correct int8 recipe. The parser handles both current and legacy
+  ModelProto field layouts found in real files.
+
 ## v0.3.0 (2026-11-02)
 
 - `rkdoctor rtsp` is implemented: a pure-stdlib RTSP client (Basic/Digest

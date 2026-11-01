@@ -103,10 +103,13 @@ PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -
   （无需额外装包），列出 CPU 回退算子、用 runtime 自身计数测 p50/p95 延迟，
   给出 `NPU_ONLY / MIXED / CPU_HEAVY / UNKNOWN` 判定；可选 `--onnx` 在装有
   onnxruntime 时与源 ONNX 做输出漂移对比。
-- v0.3（当前）：rtsp 验收——`rkdoctor rtsp` 用纯标准库客户端打开摄像头流，
+- v0.3：rtsp 验收——`rkdoctor rtsp` 用纯标准库客户端打开摄像头流，
   测实测帧率/丢包/抖动/首帧时间/时间戳健康，装有 OpenCV 时抽查解码
   （黑帧/冻结），给出 `HEALTHY / DEGRADED / BROKEN` 判定；URL 密码一律脱敏。
-- v0.4（计划）：围绕官方 RKNN Toolkit 的转换三件套——转前体检、配方生成、转后验收。
+- v0.4（当前）：convert 转换三件套——`convert check` 转前体检（纯标准库解析
+  ONNX 结构：动态维度/控制流算子/敏感算子/量化尾巴，给出 READY/RISKY/
+  LIKELY_TO_FAIL）、`convert recipe` 生成官方 Toolkit2 转换脚本（只生成不执行）、
+  `convert verify` 转后验收（复用 model 诊断）。
 
 RK Edge Doctor 是与 Site AI Gateway 关联的开源项目：https://site-ai-gateway.com/open-source/rk-edge-doctor/
 

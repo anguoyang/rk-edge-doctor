@@ -240,3 +240,72 @@ def terminal_rtsp_report(report: dict, paths: list) -> str:
         lines.append("note: " + note)
     lines.append(report["verdict"] + " | Reports: " + (", ".join(paths) if paths else "none requested"))
     return "\n".join(lines)
+
+
+_CONVERT_STYLE = _MODEL_STYLE + """
+.READY{border-color:#16704a}.RISKY{border-color:#a16207}.LIKELY_TO_FAIL{border-color:#b91c1c}
+"""
+
+
+def render_convert_html(report: dict) -> str:
+    onnx = report["onnx"] or {}
+    hist_rows = "".join(
+        "<tr><td>" + escape(str(op)) + "</td><td>" + escape(str(count)) + "</td></tr>"
+        for op, count in sorted((onnx.get("op_hist") or {}).items(),
+                                key=lambda item: -item[1]))
+    if not hist_rows:
+        hist_rows = '<tr><td colspan="2">No data</td></tr>'
+    rows = []
+    symbols = {"pass": "PASS", "warn": "WARN", "fail": "FAIL", "skip": "SKIP"}
+    for item in report["checks"]:
+        cells = [item["id"], item["title"], symbols[item["status"]], display(item["value"]),
+                 item["detail"], item["hint"] or ""]
+        rows.append("<tr>" + "".join("<td>" + escape(cell) + "</td>" for cell in cells) + "</tr>")
+    notes = "".join("<li>" + escape(note) + "</li>" for note in report["notes"])
+    host = escape(display(report["host"]))
+    model = escape(display(report["model"]))
+    cards = (
+        '<div class="card ' + escape(report["verdict"], quote=True) + '"><strong>'
+        + escape(report["verdict"]) + "</strong><span>VERDICT</span></div>"
+        '<div class="card"><strong>' + escape(display(report["target"]))
+        + "</strong><span>TARGET</span></div>"
+        '<div class="card"><strong>' + escape(display(onnx.get("nodes")))
+        + "</strong><span>NODES</span></div>"
+        '<div class="card"><strong>' + escape(display(onnx.get("weights_mb")))
+        + "</strong><span>WEIGHTS (MB)</span></div>"
+    )
+    return """<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RK Edge Doctor convert check</title>
+<style>""" + _CONVERT_STYLE + """</style></head><body><h1>RK Edge Doctor - convert check</h1>
+""" + "<h2>" + escape(report["verdict"]) + '</h2><p class="meta">' + host + "<br>Model: " + model \
+        + "<br>" + ("Version " + escape(report["tool_version"]) + " · " + escape(report["generated_at"])) \
+        + '</p><div class="cards">' + cards + '</div><div class="table"><table><thead><tr>' \
+        + "<th>ID</th><th>Check</th><th>Status</th><th>Value</th><th>Detail</th><th>Hint</th>" \
+        + "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>" \
+        + '<h3>Operator histogram</h3><div class="table"><table><thead><tr><th>Op</th><th>Count</th></tr></thead><tbody>' \
+        + hist_rows + "</tbody></table></div>" \
+        + ("<h3>Notes</h3><ul>" + notes + "</ul>" if notes else "") \
+        + "<footer>" + escape(FOOTER) + "</footer></body></html>\n"
+
+
+def write_convert_reports(report: dict, json_path: Optional[str] = None,
+                          html_path: Optional[str] = None) -> None:
+    if json_path:
+        Path(json_path).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if html_path:
+        Path(html_path).write_text(render_convert_html(report), encoding="utf-8")
+
+
+def terminal_convert_report(report: dict, paths: list) -> str:
+    symbols = {"pass": "+", "warn": "!", "fail": "X", "skip": "-"}
+    lines = ["Model: " + report["model"]["file"] + " -> " + report["target"]
+             + " | Verdict: " + report["verdict"]]
+    for item in report["checks"]:
+        lines.append(symbols[item["status"]] + " " + item["id"] + ": " + display(item["value"])
+                     + " (" + item["detail"] + ")")
+    for note in report["notes"]:
+        lines.append("note: " + note)
+    lines.append(report["verdict"] + " | Reports: " + (", ".join(paths) if paths else "none requested"))
+    return "\n".join(lines)

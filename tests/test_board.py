@@ -299,7 +299,7 @@ class CliTests(unittest.TestCase):
         with redirect_stdout(output), self.assertRaises(SystemExit) as error:
             main(["--version"])
         self.assertEqual(error.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "rkdoctor 0.3.0")
+        self.assertEqual(output.getvalue().strip(), "rkdoctor 0.4.0")
 
     def test_board_rejects_unknown_flags(self):
         with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:

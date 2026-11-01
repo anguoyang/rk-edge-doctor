@@ -1,0 +1,189 @@
+{
+  "schema": 1,
+  "tool_version": "0.1.0",
+  "generated_at": "2026-11-01T00:21:55.856198+00:00",
+  "host": {
+    "hostname": "htch-runtime",
+    "soc": "unknown",
+    "os": "Ubuntu 24.04.5 LTS",
+    "kernel": "7.0.0-39-generic"
+  },
+  "summary": {
+    "pass": 3,
+    "warn": 6,
+    "fail": 0,
+    "skip": 7
+  },
+  "verdict": "ATTENTION",
+  "checks": [
+    {
+      "id": "soc",
+      "title": "SoC",
+      "status": "warn",
+      "value": {
+        "soc": "unknown",
+        "rockchip": false,
+        "model": "unknown"
+      },
+      "detail": "Device tree unavailable; non-Rockchip x86 host.",
+      "hint": "Run on a Rockchip board for board acceptance."
+    },
+    {
+      "id": "os",
+      "title": "Operating system",
+      "status": "warn",
+      "value": {
+        "distribution": "Ubuntu 24.04.5 LTS",
+        "architecture": "x86_64"
+      },
+      "detail": "Distribution from /etc/os-release; architecture from running uname -m.",
+      "hint": "Use an aarch64 OS and check that /etc/os-release is readable."
+    },
+    {
+      "id": "kernel",
+      "title": "Kernel",
+      "status": "pass",
+      "value": "7.0.0-39-generic",
+      "detail": "Running uname -r; recorded without version judgment.",
+      "hint": null
+    },
+    {
+      "id": "cpu",
+      "title": "CPU",
+      "status": "skip",
+      "value": {
+        "cores": 4,
+        "clusters": []
+      },
+      "detail": "Core count from cpuinfo; cpufreq grouped by related_cpus; missing/unreadable frequencies are null.",
+      "hint": "Check /proc/cpuinfo and enable readable CPU frequency sysfs entries."
+    },
+    {
+      "id": "memory",
+      "title": "Memory",
+      "status": "warn",
+      "value": {
+        "total_kib": 8124908,
+        "available_kib": 634740,
+        "available_percent": 7.81
+      },
+      "detail": "Warn when available memory is below 10%.",
+      "hint": "Stop unused workloads to free memory."
+    },
+    {
+      "id": "disk",
+      "title": "Disk",
+      "status": "pass",
+      "value": {
+        "total_bytes": 8053063680,
+        "free_bytes": 7957737472,
+        "free_percent": 98.82
+      },
+      "detail": "Usage of /, or the filesystem containing --root; not snapshot disk capacity.",
+      "hint": null
+    },
+    {
+      "id": "npu_device",
+      "title": "NPU device",
+      "status": "skip",
+      "value": null,
+      "detail": "No NPU device on non-Rockchip host.",
+      "hint": "Run on a Rockchip board with the rknpu driver enabled."
+    },
+    {
+      "id": "npu_driver",
+      "title": "NPU driver",
+      "status": "skip",
+      "value": null,
+      "detail": "Debugfs version missing or unreadable.",
+      "hint": "用 sudo 重跑可读 / Rerun with sudo to read debugfs."
+    },
+    {
+      "id": "npu_load",
+      "title": "NPU load",
+      "status": "skip",
+      "value": null,
+      "detail": "Debugfs load missing or unreadable.",
+      "hint": "用 sudo 重跑可读 / Rerun with sudo to read debugfs."
+    },
+    {
+      "id": "npu_freq",
+      "title": "NPU frequency",
+      "status": "skip",
+      "value": null,
+      "detail": "NPU devfreq entries missing or unreadable.",
+      "hint": "Check that the source exists and is readable."
+    },
+    {
+      "id": "rknn_runtime",
+      "title": "RKNN runtime",
+      "status": "warn",
+      "value": {
+        "present": false,
+        "version": "unknown"
+      },
+      "detail": "librknnrt.so not found; a static C API deployment may be intentional.",
+      "hint": "Install the board vendor's RKNN runtime if dynamic RKNN execution is needed."
+    },
+    {
+      "id": "thermal",
+      "title": "Thermal zones",
+      "status": "skip",
+      "value": null,
+      "detail": "Thermal zones missing or unreadable.",
+      "hint": "Check that the source exists and is readable."
+    },
+    {
+      "id": "mpp",
+      "title": "MPP video acceleration",
+      "status": "warn",
+      "value": {
+        "present": false
+      },
+      "detail": "/dev/mpp_service; needed only for relevant video/image workloads.",
+      "hint": "Enable the board's mpp driver if your workload needs it."
+    },
+    {
+      "id": "rga",
+      "title": "RGA acceleration",
+      "status": "warn",
+      "value": {
+        "present": false
+      },
+      "detail": "/dev/rga; needed only for relevant video/image workloads.",
+      "hint": "Enable the board's rga driver if your workload needs it."
+    },
+    {
+      "id": "video_devices",
+      "title": "Video devices",
+      "status": "skip",
+      "value": {
+        "count": 0
+      },
+      "detail": "No video devices found or device directory unreadable.",
+      "hint": "Connect a video capture device and check its kernel driver if needed."
+    },
+    {
+      "id": "python_env",
+      "title": "Python environment",
+      "status": "pass",
+      "value": {
+        "python": "3.12.3",
+        "modules": {
+          "rknnlite": {
+            "present": false,
+            "version": "unknown",
+            "reason": "module absent"
+          },
+          "cv2": {
+            "present": false,
+            "version": "unknown",
+            "reason": "module absent"
+          }
+        }
+      },
+      "detail": "Running Python environment, including with --root; optional absence is informational.",
+      "hint": null
+    }
+  ]
+}

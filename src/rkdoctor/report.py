@@ -85,3 +85,96 @@ def terminal_report(report: dict, paths: list) -> str:
              for item in report["checks"]]
     lines.append(report["verdict"] + " | Reports: " + (", ".join(paths) if paths else "none requested"))
     return "\n".join(lines)
+
+
+_MODEL_STYLE = """
+:root{font-family:system-ui,sans-serif;color:#182535;background:#f1f5f9}
+body{max-width:1400px;margin:32px auto;padding:0 20px}h1{margin-bottom:8px}
+.meta{overflow-wrap:anywhere;color:#475569}.cards{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}
+.card{background:white;border-top:5px solid #64748b;border-radius:6px;padding:16px;min-width:120px}
+.card strong{font-size:1.6rem;display:block}.NPU_ONLY{border-color:#16704a}.MIXED{border-color:#a16207}
+.CPU_HEAVY{border-color:#b91c1c}.UNKNOWN{border-color:#64748b}
+.table{overflow-x:auto;background:white;margin-bottom:24px}table{border-collapse:collapse;width:100%;text-align:left}
+th,td{padding:12px;border-bottom:1px solid #cbd5e1;vertical-align:top;overflow-wrap:anywhere}
+th{background:#e2e8f0}footer{margin:28px 0;font-size:.9rem;overflow-wrap:anywhere}
+"""
+
+
+def _op_rows(ops: list) -> str:
+    if not ops:
+        return '<tr><td colspan="5">None</td></tr>'
+    return "".join(
+        "<tr><td>" + escape(str(op["id"])) + "</td><td>" + escape(op["op_type"])
+        + "</td><td>" + escape(op["data_type"]) + "</td><td>" + escape(str(op["time_us"]))
+        + "</td><td>" + escape(op["full_name"]) + "</td></tr>" for op in ops)
+
+
+def render_model_html(report: dict) -> str:
+    latency = report["latency_us"]
+    perf = report["perf"] or {}
+    cards = (
+        '<div class="card ' + escape(report["verdict"], quote=True) + '"><strong>'
+        + escape(report["verdict"]) + "</strong><span>VERDICT</span></div>"
+        '<div class="card"><strong>' + escape(display(latency["p50"])) + "</strong><span>P50 (us)</span></div>"
+        '<div class="card"><strong>' + escape(display(latency["p95"])) + "</strong><span>P95 (us)</span></div>"
+        '<div class="card"><strong>' + escape(display(perf.get("fallback_share_pct")))
+        + "</strong><span>CPU FALLBACK %</span></div>"
+    )
+    ranking_rows = "".join(
+        "<tr><td>" + escape(row["op_type"]) + "</td><td>" + escape(str(row["calls"]))
+        + "</td><td>" + escape(str(row["cpu_us"])) + "</td><td>" + escape(str(row["npu_us"]))
+        + "</td><td>" + escape(str(row["total_us"])) + "</td><td>"
+        + escape(str(row["ratio_pct"])) + "</td></tr>" for row in report["op_type_ranking"])
+    if not ranking_rows:
+        ranking_rows = '<tr><td colspan="6">No data</td></tr>'
+    notes = "".join("<li>" + escape(note) + "</li>" for note in report["notes"])
+    host = escape(display(report["host"]))
+    model = escape(display(report["model"]))
+    runtime = escape(display(report["runtime"]))
+    return """<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RK Edge Doctor model report</title>
+<style>""" + _MODEL_STYLE + """</style></head><body><h1>RK Edge Doctor - model</h1>
+""" + "<h2>" + escape(report["verdict"]) + '</h2><p class="meta">' + host + "<br>Model: " + model \
+        + "<br>Runtime: " + runtime + "<br>" + (
+            "Version " + escape(report["tool_version"]) + " · " + escape(report["generated_at"])
+        ) + '</p><div class="cards">' + cards + '</div>' \
+        + '<h3>CPU fallback operators</h3><div class="table"><table><thead><tr>' \
+        + "<th>ID</th><th>OpType</th><th>DataType</th><th>Time (us)</th><th>Full name</th>" \
+        + "</tr></thead><tbody>" + _op_rows(report["fallback_ops"]) + "</tbody></table></div>" \
+        + '<h3>Structural CPU operators (input/output staging, not fallback)</h3><div class="table"><table><thead><tr>' \
+        + "<th>ID</th><th>OpType</th><th>DataType</th><th>Time (us)</th><th>Full name</th>" \
+        + "</tr></thead><tbody>" + _op_rows(report["structural_cpu_ops"]) + "</tbody></table></div>" \
+        + '<h3>Operator time ranking</h3><div class="table"><table><thead><tr>' \
+        + "<th>OpType</th><th>Calls</th><th>CPU (us)</th><th>NPU (us)</th><th>Total (us)</th><th>Ratio %</th>" \
+        + "</tr></thead><tbody>" + ranking_rows + "</tbody></table></div>" \
+        + ("<h3>Notes</h3><ul>" + notes + "</ul>" if notes else "") \
+        + "<footer>" + escape(FOOTER) + "</footer></body></html>\n"
+
+
+def write_model_reports(report: dict, json_path: Optional[str] = None,
+                        html_path: Optional[str] = None) -> None:
+    if json_path:
+        Path(json_path).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if html_path:
+        Path(html_path).write_text(render_model_html(report), encoding="utf-8")
+
+
+def terminal_model_report(report: dict, paths: list) -> str:
+    latency = report["latency_us"]
+    lines = ["Model: " + report["model"]["file"] + " | Verdict: " + report["verdict"]]
+    if latency["p50"] is not None:
+        lines.append("Latency us: p50=%s p95=%s mean=%s (runs=%d)"
+                     % (latency["p50"], latency["p95"], latency["mean"],
+                        report["runs"]["measured"]))
+    if report["fallback_ops"]:
+        lines.append("Top CPU fallback operators:")
+        for op in report["fallback_ops"][:5]:
+            lines.append("  X %s %s: %s us" % (op["op_type"], op["full_name"], op["time_us"]))
+    else:
+        lines.append("CPU fallback operators: none")
+    for note in report["notes"]:
+        lines.append("note: " + note)
+    lines.append(report["verdict"] + " | Reports: " + (", ".join(paths) if paths else "none requested"))
+    return "\n".join(lines)

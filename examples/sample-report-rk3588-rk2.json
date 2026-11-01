@@ -23,7 +23,7 @@
       "value": {
         "soc": "rk3588",
         "rockchip": true,
-        "model": "ztl, A588"
+        "model": "RK3588 board"
       },
       "detail": "Read device-tree model and NUL-separated compatible.",
       "hint": null

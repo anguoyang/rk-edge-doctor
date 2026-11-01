@@ -287,24 +287,19 @@ class ProbeAndThresholdTests(unittest.TestCase):
 
 
 class CliTests(unittest.TestCase):
-    def test_planned_commands(self):
-        # model shipped in v0.2; only rtsp remains a planned placeholder.
-        for name, version in (("rtsp", "v0.3"),):
-            output = io.StringIO()
-            with redirect_stdout(output):
-                status = main([name, "--future-option", "value"])
-            self.assertEqual(status, 3)
-            self.assertEqual(len(output.getvalue().splitlines()), 2)
-            self.assertIn("planned", output.getvalue())
-            self.assertIn(version, output.getvalue())
-            self.assertIn("计划", output.getvalue())
+    def test_rtsp_rejects_non_rtsp_url(self):
+        # rtsp shipped in v0.3; a non-rtsp URL is a usage error (exit 2).
+        output = io.StringIO()
+        with redirect_stdout(output):
+            status = main(["rtsp", "http://example.com/stream"])
+        self.assertEqual(status, 2)
 
     def test_version(self):
         output = io.StringIO()
         with redirect_stdout(output), self.assertRaises(SystemExit) as error:
             main(["--version"])
         self.assertEqual(error.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "rkdoctor 0.2.0")
+        self.assertEqual(output.getvalue().strip(), "rkdoctor 0.3.0")
 
     def test_board_rejects_unknown_flags(self):
         with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:

@@ -178,3 +178,65 @@ def terminal_model_report(report: dict, paths: list) -> str:
         lines.append("note: " + note)
     lines.append(report["verdict"] + " | Reports: " + (", ".join(paths) if paths else "none requested"))
     return "\n".join(lines)
+
+
+_RTSP_STYLE = _MODEL_STYLE + """
+.HEALTHY{border-color:#16704a}.DEGRADED{border-color:#a16207}.BROKEN{border-color:#b91c1c}
+"""
+
+
+def render_rtsp_html(report: dict) -> str:
+    stats = report["stats"] or {}
+    cards = (
+        '<div class="card ' + escape(report["verdict"], quote=True) + '"><strong>'
+        + escape(report["verdict"]) + "</strong><span>VERDICT</span></div>"
+        '<div class="card"><strong>' + escape(display(stats.get("fps_measured")))
+        + "</strong><span>FPS</span></div>"
+        '<div class="card"><strong>' + escape(display(stats.get("loss_pct")))
+        + "</strong><span>LOSS %</span></div>"
+        '<div class="card"><strong>' + escape(display(stats.get("jitter_ms")))
+        + "</strong><span>JITTER (ms)</span></div>"
+        '<div class="card"><strong>' + escape(display(stats.get("bitrate_mbps")))
+        + "</strong><span>MBPS</span></div>"
+    )
+    rows = []
+    symbols = {"pass": "PASS", "warn": "WARN", "fail": "FAIL", "skip": "SKIP"}
+    for item in report["checks"]:
+        cells = [item["id"], item["title"], symbols[item["status"]], display(item["value"]),
+                 item["detail"], item["hint"] or ""]
+        rows.append("<tr>" + "".join("<td>" + escape(cell) + "</td>" for cell in cells) + "</tr>")
+    notes = "".join("<li>" + escape(note) + "</li>" for note in report["notes"])
+    host = escape(display(report["host"]))
+    stream = escape(display(report["stream"]))
+    return """<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RK Edge Doctor rtsp report</title>
+<style>""" + _RTSP_STYLE + """</style></head><body><h1>RK Edge Doctor - rtsp</h1>
+""" + "<h2>" + escape(report["verdict"]) + '</h2><p class="meta">' + host + "<br>Stream: " + stream \
+        + "<br>" + ("Version " + escape(report["tool_version"]) + " · " + escape(report["generated_at"])) \
+        + '</p><div class="cards">' + cards + '</div><div class="table"><table><thead><tr>' \
+        + "<th>ID</th><th>Check</th><th>Status</th><th>Value</th><th>Detail</th><th>Hint</th>" \
+        + "</tr></thead><tbody>" + "".join(rows) + "</tbody></table></div>" \
+        + ("<h3>Notes</h3><ul>" + notes + "</ul>" if notes else "") \
+        + "<footer>" + escape(FOOTER) + "</footer></body></html>\n"
+
+
+def write_rtsp_reports(report: dict, json_path: Optional[str] = None,
+                       html_path: Optional[str] = None) -> None:
+    if json_path:
+        Path(json_path).write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if html_path:
+        Path(html_path).write_text(render_rtsp_html(report), encoding="utf-8")
+
+
+def terminal_rtsp_report(report: dict, paths: list) -> str:
+    symbols = {"pass": "+", "warn": "!", "fail": "X", "skip": "-"}
+    lines = ["Stream: " + report["stream"]["url"] + " | Verdict: " + report["verdict"]]
+    for item in report["checks"]:
+        lines.append(symbols[item["status"]] + " " + item["id"] + ": " + display(item["value"])
+                     + " (" + item["detail"] + ")")
+    for note in report["notes"]:
+        lines.append("note: " + note)
+    lines.append(report["verdict"] + " | Reports: " + (", ".join(paths) if paths else "none requested"))
+    return "\n".join(lines)

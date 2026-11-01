@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "kind": "rtsp",
+  "tool_version": "0.3.0",
+  "generated_at": "2026-11-01T22:33:14.039522+00:00",
+  "host": {
+    "hostname": "rk3588-board",
+    "soc": "Rockchip RK3588",
+    "kernel": "6.1.118",
+    "loadavg": [
+      16.73,
+      16.69,
+      16.64
+    ]
+  },
+  "stream": {
+    "url": "rtsp://127.0.0.1:8554/test",
+    "transport": "udp",
+    "duration_s": 8.0,
+    "negotiated": {
+      "codec": "H264",
+      "clock_rate": 90000,
+      "width": 640,
+      "height": 480,
+      "fps_sdp": 25.0
+    }
+  },
+  "stats": {
+    "packets": 1520,
+    "bytes": 1982424,
+    "frames": 201,
+    "expected_packets": 1520,
+    "lost_packets": 0,
+    "loss_pct": 0.0,
+    "jitter_ms": 0.407,
+    "fps_measured": 25.12,
+    "bitrate_mbps": 1.982,
+    "ts_regressions": 0,
+    "ts_gaps": 0,
+    "first_frame_ms": 1
+  },
+  "checks": [
+    {
+      "id": "reachability",
+      "title": "RTSP reachable",
+      "status": "pass",
+      "value": "8 ms",
+      "detail": "TCP connect + session start succeeded",
+      "hint": null
+    },
+    {
+      "id": "negotiation",
+      "title": "SDP video track",
+      "status": "pass",
+      "value": "H264",
+      "detail": "payload 96, clock 90000",
+      "hint": null
+    },
+    {
+      "id": "first_frame",
+      "title": "First frame",
+      "status": "pass",
+      "value": "1 ms",
+      "detail": "time from PLAY to first complete frame",
+      "hint": null
+    },
+    {
+      "id": "loss",
+      "title": "Packet loss",
+      "status": "pass",
+      "value": "0.000 %",
+      "detail": "0 of 1520 packets lost",
+      "hint": null
+    },
+    {
+      "id": "jitter",
+      "title": "Jitter",
+      "status": "pass",
+      "value": "0.4 ms",
+      "detail": "RFC3550 inter-arrival jitter estimate",
+      "hint": null
+    },
+    {
+      "id": "fps",
+      "title": "Frame rate",
+      "status": "pass",
+      "value": "25.12 fps",
+      "detail": "measured vs expected 25.00 fps (0% off)",
+      "hint": null
+    },
+    {
+      "id": "timestamps",
+      "title": "RTP timestamps",
+      "status": "pass",
+      "value": "0 regressions, 0 gaps",
+      "detail": "non-monotonic or jumping RTP timestamps break recorders and analytics",
+      "hint": null
+    },
+    {
+      "id": "decode",
+      "title": "Decode spot-check",
+      "status": "pass",
+      "value": "90 frames decoded",
+      "detail": "frames decode and the picture changes over time",
+      "hint": null
+    }
+  ],
+  "verdict": "HEALTHY",
+  "notes": [
+    "Sample captured against a synthetic local RTSP test stream (640x480 H.264, hardware-encoded on the same board); host fields anonymized."
+  ]
+}

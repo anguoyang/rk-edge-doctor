@@ -31,7 +31,7 @@ PYTHONPATH=src python3 -m rkdoctor --version
 PYTHONPATH=src python3 -m rkdoctor board
 PYTHONPATH=src python3 -m rkdoctor board --root tests/fixtures/fake_rk3588 --html examples/fixture.html
 PYTHONPATH=src python3 -m rkdoctor model model.rknn --json model-report.json --html model-report.html
-PYTHONPATH=src python3 -m rkdoctor rtsp
+PYTHONPATH=src python3 -m rkdoctor rtsp rtsp://user:pass@192.0.2.10:554/stream --duration 15 --json rtsp-report.json --html rtsp-report.html
 ```
 
 可选安装：`python3 -m pip install .`，安装后使用 `rkdoctor` 命令。
@@ -41,7 +41,7 @@ PYTHONPATH=src python3 -m rkdoctor rtsp
 `board` 完成报告返回 0，即使 verdict 为 CRITICAL；自动验收应读取 JSON
 中的 verdict。写报告失败返回 1，参数错误返回 2。`model` 只要生成了报告就
 返回 0（包括 librknnrt 不可用时的 UNKNOWN 报告），文件缺失等用法错误返回 2。
-`rtsp` 预留 v0.3 接口，打印 planned 说明返回 3。
+`rtsp` 只要生成了报告就返回 0（包括流打不开时的 BROKEN 报告），非 rtsp:// 地址等用法错误返回 2。
 
 `--root DIR` 将 `/proc`、`/sys`、`/dev`、`/etc` 的探测重定向到 DIR；
 `/usr`、`/lib` 中的运行库搜索也重定向，不调用开发机的 ldconfig。
@@ -99,11 +99,14 @@ PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -
 ## 路线图
 
 - v0.1：board 体检与离线报告。
-- v0.2（当前）：model 诊断——`rkdoctor model` 经系统 librknnrt 真跑模型
+- v0.2：model 诊断——`rkdoctor model` 经系统 librknnrt 真跑模型
   （无需额外装包），列出 CPU 回退算子、用 runtime 自身计数测 p50/p95 延迟，
   给出 `NPU_ONLY / MIXED / CPU_HEAVY / UNKNOWN` 判定；可选 `--onnx` 在装有
   onnxruntime 时与源 ONNX 做输出漂移对比。
-- v0.3：RTSP 连接、实际 codec/分辨率/帧率、帧间隔抖动、冻结、重连、快照。
+- v0.3（当前）：rtsp 验收——`rkdoctor rtsp` 用纯标准库客户端打开摄像头流，
+  测实测帧率/丢包/抖动/首帧时间/时间戳健康，装有 OpenCV 时抽查解码
+  （黑帧/冻结），给出 `HEALTHY / DEGRADED / BROKEN` 判定；URL 密码一律脱敏。
+- v0.4（计划）：围绕官方 RKNN Toolkit 的转换三件套——转前体检、配方生成、转后验收。
 
 RK Edge Doctor 是与 Site AI Gateway 关联的开源项目：https://site-ai-gateway.com/open-source/rk-edge-doctor/
 

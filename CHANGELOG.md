@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.3.0 (2026-11-02)
+
+- `rkdoctor rtsp` is implemented: a pure-stdlib RTSP client (Basic/Digest
+  auth, UDP or TCP-interleaved) opens a camera stream and measures an
+  acceptance window (default 15s):
+  - reachability and SDP negotiation (codec, payload, clock);
+  - time to first frame, measured frame rate, RTP packet loss, inter-arrival
+    jitter, bitrate, and RTP timestamp health (regressions and gaps);
+  - `--expect-width/--expect-height/--expect-fps` assertions for acceptance
+    runs;
+  - optional H.264 decode spot-check when OpenCV is installed (black or
+    frozen picture detection) via stdlib RTP reassembly;
+  - verdict `HEALTHY` / `DEGRADED` / `BROKEN`; schema 1 JSON (`kind: "rtsp"`)
+    plus single-file HTML reports.
+- Privacy: passwords in stream URLs are redacted in terminal output and in
+  all reports; reports record the stream URL host/path only with credentials
+  masked.
+- Verified end-to-end on a real RK3588 board against a synthetic local RTSP
+  stream (640x480 H.264 hardware-encoded on the same board): UDP, TCP and
+  Digest-auth sessions all measure HEALTHY with 0% loss and 25.0 fps.
+
 ## v0.2.0 (2026-11-01)
 
 - `rkdoctor model` is implemented: it loads a converted `.rknn` model through

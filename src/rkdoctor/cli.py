@@ -8,9 +8,11 @@ from typing import List, Optional
 from . import __version__
 from .checks.board import run_checks
 from .checks.model import diagnose_model
+from .checks.rtsp import diagnose_rtsp
 from .probe import Probe
 from .report import (build_report, terminal_model_report, terminal_report,
-                     write_model_reports, write_reports)
+                     terminal_rtsp_report, write_model_reports, write_reports,
+                     write_rtsp_reports)
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -30,15 +32,42 @@ def main(argv: Optional[List[str]] = None) -> int:
                        help="CPU fallback time share above which the verdict is CPU_HEAVY (default 20)")
     model.add_argument("--json", metavar="PATH", help="Write schema 1 JSON")
     model.add_argument("--html", metavar="PATH", help="Write a standalone HTML report")
-    commands.add_parser("rtsp", help="Planned; not implemented yet")
+    rtsp = commands.add_parser("rtsp", help="Acceptance-check an RTSP camera stream")
+    rtsp.add_argument("url", metavar="URL", help="rtsp:// URL of the stream")
+    rtsp.add_argument("--duration", type=float, default=15.0,
+                      help="Measurement window in seconds (default 15)")
+    rtsp.add_argument("--transport", choices=["udp", "tcp"], default="udp",
+                      help="RTP transport (default udp)")
+    rtsp.add_argument("--expect-width", type=int, help="Expected frame width in px")
+    rtsp.add_argument("--expect-height", type=int, help="Expected frame height in px")
+    rtsp.add_argument("--expect-fps", type=float, help="Expected frame rate")
+    rtsp.add_argument("--json", metavar="PATH", help="Write schema 1 JSON")
+    rtsp.add_argument("--html", metavar="PATH", help="Write a standalone HTML report")
     args, extra = parser.parse_known_args(argv)
 
-    if args.command == "rtsp":
-        print("rtsp is planned for v0.3; not implemented yet.")
-        print("rtsp 计划于 v0.3 实现；当前仅保留接口。")
-        return 3
     if extra:
         parser.error("unrecognized arguments: " + " ".join(extra))
+
+    if args.command == "rtsp":
+        if not args.url.startswith("rtsp://"):
+            print("rkdoctor: not an rtsp:// URL: " + args.url, file=sys.stderr)
+            return 2
+        expect = {}
+        if args.expect_width:
+            expect["width"] = args.expect_width
+        if args.expect_height:
+            expect["height"] = args.expect_height
+        if args.expect_fps:
+            expect["fps"] = args.expect_fps
+        report = diagnose_rtsp(args.url, duration=args.duration,
+                               transport=args.transport, expect=expect)
+        try:
+            write_rtsp_reports(report, args.json, args.html)
+        except (OSError, ValueError) as error:
+            print("rkdoctor: cannot write report: " + str(error), file=sys.stderr)
+            return 1
+        print(terminal_rtsp_report(report, [p for p in (args.json, args.html) if p]))
+        return 0
 
     if args.command == "model":
         path = Path(args.model_path)

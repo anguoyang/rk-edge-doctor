@@ -49,7 +49,7 @@ PYTHONPATH=src python3 -m rkdoctor --version
 PYTHONPATH=src python3 -m rkdoctor board
 PYTHONPATH=src python3 -m rkdoctor board --root tests/fixtures/fake_rk3588 --html examples/fixture.html
 PYTHONPATH=src python3 -m rkdoctor model model.rknn --json model-report.json --html model-report.html
-PYTHONPATH=src python3 -m rkdoctor rtsp
+PYTHONPATH=src python3 -m rkdoctor rtsp rtsp://user:pass@192.0.2.10:554/stream --duration 15 --json rtsp-report.json --html rtsp-report.html
 ```
 
 An optional package installation exposes the `rkdoctor` console command:
@@ -60,8 +60,10 @@ for an offline installation). Running from source above needs no packages.
 the JSON verdict for acceptance decisions. Report-writing errors exit 1, CLI
 usage errors exit 2. `model` exits 0 whenever a report is generated — including
 an `UNKNOWN` report when librknnrt or the model is unusable — and 2 for usage
-errors such as a missing file. `rtsp` prints a planned line and exits 3.
-`--version` exits 0. Create output parent directories first.
+errors such as a missing file. `rtsp` exits 0 whenever a report is generated —
+including a `BROKEN` report when the stream cannot be opened — and 2 for usage
+errors such as a non-rtsp URL. `--version` exits 0. Create output parent
+directories first.
 
 `--root DIR` redirects `/proc`, `/sys`, `/dev` and `/etc` reads. Runtime-library
 searches in `/usr` and `/lib` are redirected too, and host `ldconfig` is disabled
@@ -104,6 +106,22 @@ JSON includes the tool version, timestamp with timezone, hostname, SoC, OS and
 kernel. It does not include board serial numbers. HTML is a single file with
 inline CSS and no JavaScript or external resources.
 
+## RTSP acceptance checks (`rkdoctor rtsp`)
+
+A pure-stdlib RTSP client (no ffmpeg/ffprobe needed) opens the stream over UDP
+or TCP (`--transport tcp`), negotiates via SDP, and measures a window
+(`--duration`, default 15s): reachability, negotiated codec, time to first
+frame, measured frame rate (compare with `--expect-fps` / `--expect-width` /
+`--expect-height`), RTP packet loss, inter-arrival jitter, bitrate, and RTP
+timestamp health (regressions/gaps). When OpenCV is installed, an H.264 decode
+spot-check also flags black or frozen pictures. Verdict:
+`HEALTHY` / `DEGRADED` / `BROKEN`. **Passwords in the URL are always redacted**
+in terminal output and in both reports. Reports are schema 1 JSON
+(`kind: "rtsp"`) plus a single-file HTML report; see
+[the sample report](examples/sample-report-rtsp-local-stream.json) captured
+against a synthetic local stream on an RK3588 board. Digest and Basic auth are
+supported.
+
 ## Development
 
 With pytest already available:
@@ -125,13 +143,17 @@ Rockchip library. CI runs pytest on Python 3.9 and 3.12.
 ## Roadmap
 
 - v0.1: board checks and offline reports.
-- v0.2 (current): model diagnosis — `rkdoctor model` runs the model on the NPU
+- v0.2: model diagnosis — `rkdoctor model` runs the model on the NPU
   through the system librknnrt (no extra packages), lists operators that fall
   back to CPU, measures p50/p95 latency from the runtime's own counters, and
   gives a verdict: `NPU_ONLY / MIXED / CPU_HEAVY / UNKNOWN`. Optional `--onnx`
   compares outputs against the source ONNX model when onnxruntime is present.
-- v0.3: RTSP connection, actual codec/resolution/frame rate, frame interval
-  jitter, freezes, reconnects and snapshots.
+- v0.3 (current): RTSP acceptance — `rkdoctor rtsp` opens a camera stream with
+  a pure-stdlib client, measures frame rate / loss / jitter / first frame /
+  timestamp health, optionally spot-checks decoding (black/frozen), and gives
+  a verdict: `HEALTHY / DEGRADED / BROKEN`.
+- v0.4 (planned): conversion trio around the official RKNN Toolkit —
+  pre-conversion checks, recipe generation, post-conversion verification.
 
 RK Edge Doctor is an open-source project associated with Site AI Gateway: https://site-ai-gateway.com/open-source/rk-edge-doctor/
 

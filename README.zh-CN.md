@@ -16,8 +16,11 @@ PYTHONPATH=src python3 -m rkdoctor board --json examples/report.json --html exam
 > 示例截图占位：终端摘要与单文件 HTML 报告。
 
 已附上本机真实运行的 [x86 JSON](examples/sample-report-x86.json)、
-[x86 HTML](examples/sample-report-x86.html) 和
-[RK3588 假树 HTML](examples/sample-report-rk3588-fixture.html)。
+[x86 HTML](examples/sample-report-x86.html)、
+[RK3588 假树 HTML](examples/sample-report-rk3588-fixture.html)，以及一台
+**真实 RK3588 板卡**（Ubuntu 22.04、内核 6.1、rknpu 驱动 0.9.8，16 项检查
+全部通过）的报告：[JSON](examples/sample-report-rk3588-rk2.json) /
+[HTML](examples/sample-report-rk3588-rk2.html)。
 [English README](README.md)
 
 ## 使用方式
@@ -56,7 +59,7 @@ RK3588 假树时，架构检查仍然 warn；测试会替换这些实时值来�
 | `cpu` | 核数、按 cluster 分组的当前频率 |
 | `memory` | 总量/可用量；可用 <10% 为 warn |
 | `disk` | 剩余 <10% 为 warn，<5% 为 fail |
-| `npu_device` | `/dev/rknpu*`；RK 缺失为 fail，非 RK 缺失为 skip |
+| `npu_device` | `/dev/rknpu*` 或驱动证据（部分 BSP 仅经 DRM render 节点暴露 NPU）；RK 上两者皆缺失为 fail，非 RK 缺失为 skip |
 | `npu_driver` | debugfs 驱动版本；不可读为 skip，提示 sudo 重跑 |
 | `npu_load` | NPU 各核负载；不可读为 skip |
 | `npu_freq` | 当前频率和 governor；省电 governor 不警告 |

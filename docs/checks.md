@@ -66,9 +66,16 @@ original disk-capacity measurement; this check measures the execution host.
 ## npu_device
 
 Source: `/dev/rknpu*`. Value: matching paths, or null when skipped. A detected
-device passes. Explicit absence on a known RK board fails; absence on a known
-non-RK host skips. Inaccessible enumeration or unknown SoC skips. Enable the
-board's rknpu kernel driver and verify device creation when required.
+device passes. Some BSPs (e.g. kernel 6.1 with rknpu driver 0.9.8) expose no
+`/dev/rknpu*` node at all — the NPU is reached via DRM render nodes
+(`/dev/dri/renderD*`) while the driver still reports version/load via debugfs
+and devfreq; in that case live driver evidence (readable
+`/sys/kernel/debug/rknpu/version` or an NPU devfreq node) also passes, with
+value `{dev_nodes: [], render_nodes: [...], access: "drm_render/debugfs"}`.
+Explicit absence of both device nodes and driver evidence on a known RK board
+fails; absence on a known non-RK host skips. Inaccessible enumeration or
+unknown SoC skips. Enable the board's rknpu kernel driver and verify device
+creation when required.
 
 ## npu_driver
 

@@ -66,6 +66,16 @@ class FixtureTests(unittest.TestCase):
             self.assertEqual(checks[check_id]["status"], "skip")
         self.assertEqual(report["verdict"], "CRITICAL")
 
+    def test_rk_drm_only_no_dev_rknpu(self):
+        # Real-board regression (RK3588, kernel 6.1, driver 0.9.8): this BSP
+        # has no /dev/rknpu* node; the NPU is reached via DRM render nodes.
+        # Driver evidence must count as device presence, not a false fail.
+        report = self.fixture_report("fake_rk_drm_only")
+        checks = {item["id"]: item for item in report["checks"]}
+        self.assertEqual(checks["npu_device"]["status"], "pass")
+        self.assertEqual(checks["npu_driver"]["status"], "pass")
+        self.assertNotEqual(report["verdict"], "CRITICAL")
+
     def test_schema_and_summary(self):
         report = self.fixture_report("fake_rk3588")
         self.assertEqual(set(report), {"schema", "tool_version", "generated_at", "host", "summary", "verdict", "checks"})
@@ -293,7 +303,7 @@ class CliTests(unittest.TestCase):
         with redirect_stdout(output), self.assertRaises(SystemExit) as error:
             main(["--version"])
         self.assertEqual(error.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "rkdoctor 0.1.0")
+        self.assertEqual(output.getvalue().strip(), "rkdoctor 0.1.1")
 
     def test_board_rejects_unknown_flags(self):
         with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:

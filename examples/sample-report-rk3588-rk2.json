@@ -1,0 +1,302 @@
+{
+  "schema": 1,
+  "tool_version": "0.1.1",
+  "generated_at": "2026-11-01T02:21:19.661001+00:00",
+  "host": {
+    "hostname": "RK3588",
+    "soc": "rk3588",
+    "os": "Ubuntu 22.04.5 LTS",
+    "kernel": "6.1.118"
+  },
+  "summary": {
+    "pass": 16,
+    "warn": 0,
+    "fail": 0,
+    "skip": 0
+  },
+  "verdict": "HEALTHY",
+  "checks": [
+    {
+      "id": "soc",
+      "title": "SoC",
+      "status": "pass",
+      "value": {
+        "soc": "rk3588",
+        "rockchip": true,
+        "model": "ztl, A588"
+      },
+      "detail": "Read device-tree model and NUL-separated compatible.",
+      "hint": null
+    },
+    {
+      "id": "os",
+      "title": "Operating system",
+      "status": "pass",
+      "value": {
+        "distribution": "Ubuntu 22.04.5 LTS",
+        "architecture": "aarch64"
+      },
+      "detail": "Distribution from /etc/os-release; architecture from running uname -m.",
+      "hint": null
+    },
+    {
+      "id": "kernel",
+      "title": "Kernel",
+      "status": "pass",
+      "value": "6.1.118",
+      "detail": "Running uname -r; recorded without version judgment.",
+      "hint": null
+    },
+    {
+      "id": "cpu",
+      "title": "CPU",
+      "status": "pass",
+      "value": {
+        "cores": 8,
+        "clusters": [
+          {
+            "cpus": "0 1 2 3",
+            "current_khz": 1800000
+          },
+          {
+            "cpus": "4 5",
+            "current_khz": 2304000
+          },
+          {
+            "cpus": "6 7",
+            "current_khz": 2304000
+          }
+        ]
+      },
+      "detail": "Core count from cpuinfo; cpufreq grouped by related_cpus; missing/unreadable frequencies are null.",
+      "hint": null
+    },
+    {
+      "id": "memory",
+      "title": "Memory",
+      "status": "pass",
+      "value": {
+        "total_kib": 8105024,
+        "available_kib": 2066676,
+        "available_percent": 25.5
+      },
+      "detail": "Warn when available memory is below 10%.",
+      "hint": null
+    },
+    {
+      "id": "disk",
+      "title": "Disk",
+      "status": "pass",
+      "value": {
+        "total_bytes": 122413551616,
+        "free_bytes": 16121032704,
+        "free_percent": 13.17
+      },
+      "detail": "Usage of /, or the filesystem containing --root; not snapshot disk capacity.",
+      "hint": null
+    },
+    {
+      "id": "npu_device",
+      "title": "NPU device",
+      "status": "pass",
+      "value": {
+        "dev_nodes": [],
+        "render_nodes": [
+          "/dev/dri/renderD128",
+          "/dev/dri/renderD129"
+        ],
+        "access": "drm_render/debugfs"
+      },
+      "detail": "No /dev/rknpu* node on this BSP; rknpu driver evidence present (version/devfreq), NPU reached via DRM render nodes.",
+      "hint": null
+    },
+    {
+      "id": "npu_driver",
+      "title": "NPU driver",
+      "status": "pass",
+      "value": "0.9.8",
+      "detail": "Version from /sys/kernel/debug/rknpu/version.",
+      "hint": null
+    },
+    {
+      "id": "npu_load",
+      "title": "NPU load",
+      "status": "pass",
+      "value": {
+        "core0": 0.0,
+        "core1": 0.0,
+        "core2": 0.0
+      },
+      "detail": "Per-core utilization in percent.",
+      "hint": null
+    },
+    {
+      "id": "npu_freq",
+      "title": "NPU frequency",
+      "status": "pass",
+      "value": [
+        {
+          "device": "fdab0000.npu",
+          "current_hz": 1000000000,
+          "governor": "rknpu_ondemand"
+        }
+      ],
+      "detail": "Governor is recorded without judgment; missing frequency/governor is skipped.",
+      "hint": null
+    },
+    {
+      "id": "rknn_runtime",
+      "title": "RKNN runtime",
+      "status": "pass",
+      "value": {
+        "present": true,
+        "version": "2.3.2",
+        "paths": [
+          "/lib/librknnrt.so",
+          "/usr/lib/librknnrt.so"
+        ]
+      },
+      "detail": "Read explicit runtime version markers only; unknown when unavailable.",
+      "hint": null
+    },
+    {
+      "id": "thermal",
+      "title": "Thermal zones",
+      "status": "pass",
+      "value": [
+        {
+          "zone": "thermal_zone0",
+          "type": "soc-thermal",
+          "temperature_c": 48.076
+        },
+        {
+          "zone": "thermal_zone1",
+          "type": "bigcore0-thermal",
+          "temperature_c": 49.0
+        },
+        {
+          "zone": "thermal_zone2",
+          "type": "bigcore1-thermal",
+          "temperature_c": 49.0
+        },
+        {
+          "zone": "thermal_zone3",
+          "type": "littlecore-thermal",
+          "temperature_c": 49.0
+        },
+        {
+          "zone": "thermal_zone4",
+          "type": "center-thermal",
+          "temperature_c": 45.307
+        },
+        {
+          "zone": "thermal_zone5",
+          "type": "gpu-thermal",
+          "temperature_c": 44.384
+        },
+        {
+          "zone": "thermal_zone6",
+          "type": "npu-thermal",
+          "temperature_c": 45.307
+        }
+      ],
+      "detail": "Warn at >=75 C; fail at >=85 C.",
+      "hint": null
+    },
+    {
+      "id": "mpp",
+      "title": "MPP video acceleration",
+      "status": "pass",
+      "value": {
+        "present": true
+      },
+      "detail": "/dev/mpp_service; needed only for relevant video/image workloads.",
+      "hint": null
+    },
+    {
+      "id": "rga",
+      "title": "RGA acceleration",
+      "status": "pass",
+      "value": {
+        "present": true
+      },
+      "detail": "/dev/rga; needed only for relevant video/image workloads.",
+      "hint": null
+    },
+    {
+      "id": "video_devices",
+      "title": "Video devices",
+      "status": "pass",
+      "value": {
+        "count": 42,
+        "paths": [
+          "/dev/video-camera0",
+          "/dev/video0",
+          "/dev/video1",
+          "/dev/video10",
+          "/dev/video11",
+          "/dev/video12",
+          "/dev/video13",
+          "/dev/video14",
+          "/dev/video15",
+          "/dev/video16",
+          "/dev/video17",
+          "/dev/video18",
+          "/dev/video19",
+          "/dev/video2",
+          "/dev/video20",
+          "/dev/video21",
+          "/dev/video22",
+          "/dev/video23",
+          "/dev/video24",
+          "/dev/video25",
+          "/dev/video26",
+          "/dev/video27",
+          "/dev/video28",
+          "/dev/video29",
+          "/dev/video3",
+          "/dev/video30",
+          "/dev/video31",
+          "/dev/video32",
+          "/dev/video33",
+          "/dev/video34",
+          "/dev/video35",
+          "/dev/video36",
+          "/dev/video37",
+          "/dev/video38",
+          "/dev/video39",
+          "/dev/video4",
+          "/dev/video40",
+          "/dev/video5",
+          "/dev/video6",
+          "/dev/video7",
+          "/dev/video8",
+          "/dev/video9"
+        ]
+      },
+      "detail": "",
+      "hint": null
+    },
+    {
+      "id": "python_env",
+      "title": "Python environment",
+      "status": "pass",
+      "value": {
+        "python": "3.10.12",
+        "modules": {
+          "rknnlite": {
+            "present": false,
+            "version": "unknown",
+            "reason": "module absent"
+          },
+          "cv2": {
+            "present": true,
+            "version": "4.5.4"
+          }
+        }
+      },
+      "detail": "Running Python environment, including with --root; optional absence is informational.",
+      "hint": null
+    }
+  ]
+}

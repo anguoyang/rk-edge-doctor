@@ -119,12 +119,28 @@ def check_npu_device(probe: Probe, rockchip: Optional[bool]) -> dict:
     paths = probe.glob("/dev/rknpu*")
     if paths:
         return result("npu_device", "NPU device", "pass", paths)
+    if paths is None:
+        return skipped("npu_device", "NPU device", "Device access or SoC identification unavailable.")
+    if rockchip:
+        # Some BSPs (e.g. kernel 6.1, rknpu driver 0.9.8) expose no /dev/rknpu*
+        # node at all; the NPU is reached via DRM render nodes while the driver
+        # still reports version/load and devfreq. Treat live driver evidence as
+        # device presence instead of a false failure (found on a real RK3588).
+        driver = probe.read("/sys/kernel/debug/rknpu/version")
+        devfreq = probe.glob("/sys/class/devfreq/*npu*")
+        if driver or devfreq:
+            render = probe.glob("/dev/dri/renderD*") or []
+            return result("npu_device", "NPU device", "pass",
+                          {"dev_nodes": [], "render_nodes": render,
+                           "access": "drm_render/debugfs"},
+                          "No /dev/rknpu* node on this BSP; rknpu driver evidence "
+                          "present (version/devfreq), NPU reached via DRM render nodes.")
     if paths is None or rockchip is None:
         return skipped("npu_device", "NPU device", "Device access or SoC identification unavailable.")
     if not rockchip:
         return skipped("npu_device", "NPU device", "No NPU device on non-Rockchip host.",
                        "Run on a Rockchip board with the rknpu driver enabled.")
-    return result("npu_device", "NPU device", "fail", [], "No /dev/rknpu* device found.",
+    return result("npu_device", "NPU device", "fail", [], "No /dev/rknpu* device or rknpu driver evidence found.",
                   "Enable the board's rknpu kernel driver and check device creation.")
 
 

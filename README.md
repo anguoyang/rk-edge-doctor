@@ -27,8 +27,11 @@ ATTENTION | Reports: examples/report.json, examples/report.html
 > This abbreviated output illustrates the RK3588 fixture on an x86 development host.
 
 See the real development-host [JSON](examples/sample-report-x86.json) and
-[HTML](examples/sample-report-x86.html), and the
-[RK3588 fixture HTML](examples/sample-report-rk3588-fixture.html).
+[HTML](examples/sample-report-x86.html), the
+[RK3588 fixture HTML](examples/sample-report-rk3588-fixture.html), and a report
+from a **real RK3588 board** (Ubuntu 22.04, kernel 6.1, rknpu driver 0.9.8,
+16/16 checks pass): [JSON](examples/sample-report-rk3588-rk2.json) /
+[HTML](examples/sample-report-rk3588-rk2.html).
 [中文说明](README.zh-CN.md)
 
 ## Usage
@@ -71,7 +74,7 @@ substitute these live values when testing deterministic board verdicts.
 | `cpu` | Core count and current frequency by cluster |
 | `memory` | Total/available memory; available <10% warns |
 | `disk` | Free space; <10% warns, <5% fails |
-| `npu_device` | `/dev/rknpu*`; missing on RK fails, on non-RK skips |
+| `npu_device` | `/dev/rknpu*` or rknpu driver evidence (some BSPs expose the NPU only via DRM render nodes); missing both on RK fails, on non-RK skips |
 | `npu_driver` | Debugfs driver version; unavailable skips with sudo hint |
 | `npu_load` | Per-core NPU utilization; unavailable skips |
 | `npu_freq` | NPU frequency/governor; all governors are informational |

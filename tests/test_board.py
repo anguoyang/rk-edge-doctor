@@ -288,7 +288,8 @@ class ProbeAndThresholdTests(unittest.TestCase):
 
 class CliTests(unittest.TestCase):
     def test_planned_commands(self):
-        for name, version in (("model", "v0.2"), ("rtsp", "v0.3")):
+        # model shipped in v0.2; only rtsp remains a planned placeholder.
+        for name, version in (("rtsp", "v0.3"),):
             output = io.StringIO()
             with redirect_stdout(output):
                 status = main([name, "--future-option", "value"])
@@ -303,7 +304,7 @@ class CliTests(unittest.TestCase):
         with redirect_stdout(output), self.assertRaises(SystemExit) as error:
             main(["--version"])
         self.assertEqual(error.exception.code, 0)
-        self.assertEqual(output.getvalue().strip(), "rkdoctor 0.1.1")
+        self.assertEqual(output.getvalue().strip(), "rkdoctor 0.2.0")
 
     def test_board_rejects_unknown_flags(self):
         with redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as error:

@@ -1,5 +1,11 @@
 # RK Edge Doctor
 
+![RK Edge Doctor](assets/banner.png)
+
+[![tests](https://github.com/anguoyang/rk-edge-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/anguoyang/rk-edge-doctor/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](pyproject.toml)
+
 Offline health checks for Rockchip boards, starting with RK3588/RK3588S. Finding
 missing NPU devices, unreadable drivers, memory pressure and overheating should
 not require installing a diagnostic stack. v0.1 implements `board` with Python
@@ -23,8 +29,9 @@ unavailable sources are skipped with a reason and an actionable hint.
 ATTENTION | Reports: examples/report.json, examples/report.html
 ```
 
-> Screenshot placeholder: terminal summary and standalone HTML report.
-> This abbreviated output illustrates the RK3588 fixture on an x86 development host.
+> The abbreviated output above illustrates the RK3588 fixture on an x86
+> development host. For a real board run, see the RK3588 sample reports under
+> `examples/` (16/16 checks pass).
 
 See the real development-host [JSON](examples/sample-report-x86.json) and
 [HTML](examples/sample-report-x86.html), the

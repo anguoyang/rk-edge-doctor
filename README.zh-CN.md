@@ -1,5 +1,7 @@
 # RK Edge Doctor
 
+![RK Edge Doctor](assets/banner.png)
+
 面向 Rockchip 板卡的离线体检工具，先支持 RK3588/RK3588S。用于检查 NPU
 设备缺失、驱动不可读、内存不足和温度过高等问题。v0.1 只实现 `board`，
 运行仅需 Python 3.9+ 标准库，无第三方运行依赖。
@@ -12,8 +14,6 @@ PYTHONPATH=src python3 -m rkdoctor board --json examples/report.json --html exam
 
 完全离线，无遥测、注册、license 校验，不包含 Rockchip 专有二进制或库。
 读不到的来源记为 skip 并说明原因；无法识别的版本记为 unknown。
-
-> 示例截图占位：终端摘要与单文件 HTML 报告。
 
 已附上本机真实运行的 [x86 JSON](examples/sample-report-x86.json)、
 [x86 HTML](examples/sample-report-x86.html)、

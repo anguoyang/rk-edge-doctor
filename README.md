@@ -106,6 +106,11 @@ JSON includes the tool version, timestamp with timezone, hostname, SoC, OS and
 kernel. It does not include board serial numbers. HTML is a single file with
 inline CSS and no JavaScript or external resources.
 
+Measured results for popular public models live in the
+[model health table](docs/MODEL_HEALTH.md) — YOLOv5s/v8n/v10s/11n and
+YOLOv8s-seg on RK3588 so far, all `NPU_ONLY`; MIXED/CPU_HEAVY reports from
+custom conversions are very welcome.
+
 ## RTSP acceptance checks (`rkdoctor rtsp`)
 
 A pure-stdlib RTSP client (no ffmpeg/ffprobe needed) opens the stream over UDP

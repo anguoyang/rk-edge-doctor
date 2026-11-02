@@ -39,7 +39,12 @@ See the real development-host [JSON](examples/sample-report-x86.json) and
 [RK3588 fixture HTML](examples/sample-report-rk3588-fixture.html), and a report
 from a **real RK3588 board** (Ubuntu 22.04, kernel 6.1, rknpu driver 0.9.8,
 16/16 checks pass): [JSON](examples/sample-report-rk3588-rk2.json) /
-[HTML](examples/sample-report-rk3588-rk2.html).
+[HTML](examples/sample-report-rk3588-rk2.html). The same board family running
+**Kylin Industry V10 SP1** (kernel 5.10) tells a different story — 11 pass /
+2 warn / 1 fail / 2 skip, verdict CRITICAL on thermals (85 °C big cores):
+[JSON](examples/sample-report-rk3588-kylin.json) /
+[HTML](examples/sample-report-rk3588-kylin.html). Same hardware, different
+OS and thermal reality — which is rather the point of running the check.
 [中文说明](README.zh-CN.md)
 
 ## Usage

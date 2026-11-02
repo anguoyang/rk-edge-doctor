@@ -1,0 +1,258 @@
+{
+  "schema": 1,
+  "tool_version": "0.4.0",
+  "generated_at": "2026-11-02T01:43:12.033481+00:00",
+  "host": {
+    "hostname": "kylinos",
+    "soc": "rk3588",
+    "os": "Kylin Industry V10 SP1",
+    "kernel": "5.10.160"
+  },
+  "summary": {
+    "pass": 11,
+    "warn": 2,
+    "fail": 1,
+    "skip": 2
+  },
+  "verdict": "CRITICAL",
+  "checks": [
+    {
+      "id": "soc",
+      "title": "SoC",
+      "status": "pass",
+      "value": {
+        "soc": "rk3588",
+        "rockchip": true,
+        "model": "RK3588 board"
+      },
+      "detail": "Read device-tree model and NUL-separated compatible.",
+      "hint": null
+    },
+    {
+      "id": "os",
+      "title": "Operating system",
+      "status": "pass",
+      "value": {
+        "distribution": "Kylin Industry V10 SP1",
+        "architecture": "aarch64"
+      },
+      "detail": "Distribution from /etc/os-release; architecture from running uname -m.",
+      "hint": null
+    },
+    {
+      "id": "kernel",
+      "title": "Kernel",
+      "status": "pass",
+      "value": "5.10.160",
+      "detail": "Running uname -r; recorded without version judgment.",
+      "hint": null
+    },
+    {
+      "id": "cpu",
+      "title": "CPU",
+      "status": "pass",
+      "value": {
+        "cores": 8,
+        "clusters": [
+          {
+            "cpus": "0 1 2 3",
+            "current_khz": 1416000
+          },
+          {
+            "cpus": "4 5",
+            "current_khz": 2208000
+          },
+          {
+            "cpus": "6 7",
+            "current_khz": 2208000
+          }
+        ]
+      },
+      "detail": "Core count from cpuinfo; cpufreq grouped by related_cpus; missing/unreadable frequencies are null.",
+      "hint": null
+    },
+    {
+      "id": "memory",
+      "title": "Memory",
+      "status": "pass",
+      "value": {
+        "total_kib": 8107184,
+        "available_kib": 5317316,
+        "available_percent": 65.59
+      },
+      "detail": "Warn when available memory is below 10%.",
+      "hint": null
+    },
+    {
+      "id": "disk",
+      "title": "Disk",
+      "status": "warn",
+      "value": {
+        "total_bytes": 60952870912,
+        "free_bytes": 5690286080,
+        "free_percent": 9.34
+      },
+      "detail": "Usage of /, or the filesystem containing --root; not snapshot disk capacity.",
+      "hint": "Free disk space on the reported filesystem."
+    },
+    {
+      "id": "npu_device",
+      "title": "NPU device",
+      "status": "pass",
+      "value": {
+        "dev_nodes": [],
+        "render_nodes": [
+          "/dev/dri/renderD128",
+          "/dev/dri/renderD129"
+        ],
+        "access": "drm_render/debugfs"
+      },
+      "detail": "No /dev/rknpu* node on this BSP; rknpu driver evidence present (version/devfreq), NPU reached via DRM render nodes.",
+      "hint": null
+    },
+    {
+      "id": "npu_driver",
+      "title": "NPU driver",
+      "status": "skip",
+      "value": null,
+      "detail": "Debugfs version missing or unreadable.",
+      "hint": "用 sudo 重跑可读 / Rerun with sudo to read debugfs."
+    },
+    {
+      "id": "npu_load",
+      "title": "NPU load",
+      "status": "skip",
+      "value": null,
+      "detail": "Debugfs load missing or unreadable.",
+      "hint": "用 sudo 重跑可读 / Rerun with sudo to read debugfs."
+    },
+    {
+      "id": "npu_freq",
+      "title": "NPU frequency",
+      "status": "pass",
+      "value": [
+        {
+          "device": "fdab0000.npu",
+          "current_hz": 1000000000,
+          "governor": "rknpu_ondemand"
+        }
+      ],
+      "detail": "Governor is recorded without judgment; missing frequency/governor is skipped.",
+      "hint": null
+    },
+    {
+      "id": "rknn_runtime",
+      "title": "RKNN runtime",
+      "status": "warn",
+      "value": {
+        "present": false,
+        "version": "unknown"
+      },
+      "detail": "librknnrt.so not found; a static C API deployment may be intentional.",
+      "hint": "Install the board vendor's RKNN runtime if dynamic RKNN execution is needed."
+    },
+    {
+      "id": "thermal",
+      "title": "Thermal zones",
+      "status": "fail",
+      "value": [
+        {
+          "zone": "thermal_zone0",
+          "type": "soc-thermal",
+          "temperature_c": 82.23
+        },
+        {
+          "zone": "thermal_zone1",
+          "type": "bigcore0-thermal",
+          "temperature_c": 85.0
+        },
+        {
+          "zone": "thermal_zone2",
+          "type": "bigcore1-thermal",
+          "temperature_c": 85.0
+        },
+        {
+          "zone": "thermal_zone3",
+          "type": "littlecore-thermal",
+          "temperature_c": 83.153
+        },
+        {
+          "zone": "thermal_zone4",
+          "type": "center-thermal",
+          "temperature_c": 79.461
+        },
+        {
+          "zone": "thermal_zone5",
+          "type": "gpu-thermal",
+          "temperature_c": 77.615
+        },
+        {
+          "zone": "thermal_zone6",
+          "type": "npu-thermal",
+          "temperature_c": 79.461
+        }
+      ],
+      "detail": "Warn at >=75 C; fail at >=85 C.",
+      "hint": "Check cooling and reduce load; verify thermal sysfs access."
+    },
+    {
+      "id": "mpp",
+      "title": "MPP video acceleration",
+      "status": "pass",
+      "value": {
+        "present": true
+      },
+      "detail": "/dev/mpp_service; needed only for relevant video/image workloads.",
+      "hint": null
+    },
+    {
+      "id": "rga",
+      "title": "RGA acceleration",
+      "status": "pass",
+      "value": {
+        "present": true
+      },
+      "detail": "/dev/rga; needed only for relevant video/image workloads.",
+      "hint": null
+    },
+    {
+      "id": "video_devices",
+      "title": "Video devices",
+      "status": "pass",
+      "value": {
+        "count": 5,
+        "paths": [
+          "/dev/video-dec0",
+          "/dev/video-enc0",
+          "/dev/video0",
+          "/dev/video1",
+          "/dev/video8"
+        ]
+      },
+      "detail": "",
+      "hint": null
+    },
+    {
+      "id": "python_env",
+      "title": "Python environment",
+      "status": "pass",
+      "value": {
+        "python": "3.8.10",
+        "modules": {
+          "rknnlite": {
+            "present": false,
+            "version": "unknown",
+            "reason": "module absent"
+          },
+          "cv2": {
+            "present": true,
+            "version": "4.2.0"
+          }
+        }
+      },
+      "detail": "Running Python environment, including with --root; optional absence is informational.",
+      "hint": null
+    }
+  ],
+  "notes": []
+}

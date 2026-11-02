@@ -182,4 +182,6 @@ Rockchip library. CI runs pytest on Python 3.9 and 3.12.
 
 RK Edge Doctor is an open-source project associated with Site AI Gateway: https://site-ai-gateway.com/open-source/rk-edge-doctor/
 
+Ecosystem list: [awesome-rockchip](https://github.com/anguoyang/awesome-rockchip) — a curated, actively maintained list of Rockchip boards, tools and projects.
+
 Licensed under [Apache-2.0](LICENSE).

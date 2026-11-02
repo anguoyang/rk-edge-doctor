@@ -1,43 +1,29 @@
-# RKNN model health table
+# 拟替换 Edge Doctor repo/docs/MODEL_HEALTH.md 的新内容
+# （rk-bench v0.1 发布后，在 Edge Doctor 仓单独提交，提交说明注明数据真源迁移）
 
-Measured with `rkdoctor model` — the runtime's own PERF_DETAIL accounting,
-not wall-clock timing. If you have a model that comes out `MIXED` or
-`CPU_HEAVY`, please share the report in an issue: those are the interesting
-cases, and they are what this table is for.
+# RKNN model health table — moved
 
-## Method
+This table now lives in **[rk-bench](https://github.com/anguoyang/rk-bench)**,
+the measured RKNN leaderboard for Rockchip boards, which is the single
+source of truth for this data from 2026-11-02 on.
 
-- Board: RK3588 (Ubuntu 22.04, kernel 6.1.118), rknpu driver 0.9.8,
-  librknnrt 2.3.2
-- 20 measured runs after 3 warmups; latency from PERF_RUN hardware counters
-- The board was busy during measurement (load average ≈ 16); hardware
-  counters are used precisely so the numbers stay meaningful under load
-- Models: public RKNN Model Zoo conversions, FP, RK3588 targets
+Why the move: RK Edge Doctor diagnoses *one* model in depth; rk-bench is
+the cross-model leaderboard (latency p50/p95, CPU-fallback verdict,
+memory) under one frozen protocol — same measurement method, same
+thresholds, numbers directly comparable with `rkdoctor model` reports.
 
-## Results (2026-11-02)
+The five models first measured here (YOLOv5s-ReLU, YOLOv8n, YOLO11n,
+YOLOv10s, YOLOv8s-seg on RK3588) were re-measured under the rk-bench
+protocol (priming + 3 sessions, median p50/p95) and are published there
+with the full table. Two protocol notes explain the small differences
+from the numbers originally published on this page:
 
-| Model | Task | Verdict | p50 (ms) | p95 (ms) | CPU fallback ops | Fallback share |
-| --- | --- | --- | --- | --- | --- | --- |
-| YOLOv5s (ReLU) | detect | NPU_ONLY | 37.8 | 43.5 | 0 | 0.0% |
-| YOLOv8n | detect | NPU_ONLY | 41.1 | 41.6 | 0 | 0.0% |
-| YOLO11n | detect | NPU_ONLY | 52.9 | 53.4 | 0 | 0.0% |
-| YOLOv10s | detect | NPU_ONLY | 96.7 | 99.2 | 0 | 0.0% |
-| YOLOv8s-seg | segment | NPU_ONLY | 106.4 | 107.8 | 0 | 0.0% |
+- rkdoctor's single-process runs include a first-context effect: on
+  RK3588 (rknpu_ondemand) the first RKNN process after idle measures
+  ~15% slower. rk-bench primes before measuring.
+- rk-bench reports the median of three independent sessions instead of
+  one session, so transient slow sessions on a busy board do not leak
+  into the table.
 
-Notes:
-
-- The official zoo conversions are clean — as expected. `rkdoctor model`
-  earns its keep on *your own* conversions: custom backbones, unusual
-  operators, aggressive quantization.
-- For YOLOv10s and YOLO11n the per-layer PERF_DETAIL total runs ~10–20%
-  below the PERF_RUN total (some time is not itemized per layer); the
-  fallback verdict is unaffected because it is computed from the itemized
-  layers, and latency above is the PERF_RUN figure.
-- Input/output staging operators always execute on CPU; they are reported
-  separately and never counted as fallback.
-
-## Adding a row
-
-Run `rkdoctor model your.rknn --json report.json` and open an issue with
-the JSON attached (it contains the model file name and SHA-256 only, never
-the path). Rows for other boards (RK3576, RK3566/68, RV1126) are welcome.
+To submit a model for the table, run `rkbench run` and open a
+bench-report issue in the rk-bench repository.

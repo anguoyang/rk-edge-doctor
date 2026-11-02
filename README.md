@@ -106,10 +106,12 @@ JSON includes the tool version, timestamp with timezone, hostname, SoC, OS and
 kernel. It does not include board serial numbers. HTML is a single file with
 inline CSS and no JavaScript or external resources.
 
-Measured results for popular public models live in the
-[model health table](docs/MODEL_HEALTH.md) — YOLOv5s/v8n/v10s/11n and
-YOLOv8s-seg on RK3588 so far, all `NPU_ONLY`; MIXED/CPU_HEAVY reports from
-custom conversions are very welcome.
+Measured results for popular public models now live in
+[rk-bench](https://github.com/anguoyang/rk-bench), the RKNN leaderboard that
+is the single source of truth for this data (same measurement method and
+thresholds as `rkdoctor model`); the local
+[model health table](docs/MODEL_HEALTH.md) explains the move. MIXED/CPU_HEAVY
+reports from custom conversions are very welcome in either project.
 
 ## Conversion trio (`rkdoctor convert`)
 

@@ -1,0 +1,254 @@
+{
+  "schema": 1,
+  "tool_version": "0.4.0",
+  "generated_at": "2026-04-27T19:56:54.379873+00:00",
+  "host": {
+    "hostname": "armsom",
+    "soc": "rk3576",
+    "os": "Debian GNU/Linux 12 (bookworm)",
+    "kernel": "6.1.118-rk3576"
+  },
+  "summary": {
+    "pass": 16,
+    "warn": 0,
+    "fail": 0,
+    "skip": 0
+  },
+  "verdict": "HEALTHY",
+  "checks": [
+    {
+      "id": "soc",
+      "title": "SoC",
+      "status": "pass",
+      "value": {
+        "soc": "rk3576",
+        "rockchip": true,
+        "model": "ArmSoM CM5 IO"
+      },
+      "detail": "Read device-tree model and NUL-separated compatible.",
+      "hint": null
+    },
+    {
+      "id": "os",
+      "title": "Operating system",
+      "status": "pass",
+      "value": {
+        "distribution": "Debian GNU/Linux 12 (bookworm)",
+        "architecture": "aarch64"
+      },
+      "detail": "Distribution from /etc/os-release; architecture from running uname -m.",
+      "hint": null
+    },
+    {
+      "id": "kernel",
+      "title": "Kernel",
+      "status": "pass",
+      "value": "6.1.118-rk3576",
+      "detail": "Running uname -r; recorded without version judgment.",
+      "hint": null
+    },
+    {
+      "id": "cpu",
+      "title": "CPU",
+      "status": "pass",
+      "value": {
+        "cores": 8,
+        "clusters": [
+          {
+            "cpus": "0 1 2 3",
+            "current_khz": 2016000
+          },
+          {
+            "cpus": "4 5 6 7",
+            "current_khz": 2208000
+          }
+        ]
+      },
+      "detail": "Core count from cpuinfo; cpufreq grouped by related_cpus; missing/unreadable frequencies are null.",
+      "hint": null
+    },
+    {
+      "id": "memory",
+      "title": "Memory",
+      "status": "pass",
+      "value": {
+        "total_kib": 1999644,
+        "available_kib": 1537648,
+        "available_percent": 76.9
+      },
+      "detail": "Warn when available memory is below 10%.",
+      "hint": null
+    },
+    {
+      "id": "disk",
+      "title": "Disk",
+      "status": "pass",
+      "value": {
+        "total_bytes": 30736564224,
+        "free_bytes": 24863346688,
+        "free_percent": 80.89
+      },
+      "detail": "Usage of /, or the filesystem containing --root; not snapshot disk capacity.",
+      "hint": null
+    },
+    {
+      "id": "npu_device",
+      "title": "NPU device",
+      "status": "pass",
+      "value": {
+        "dev_nodes": [],
+        "render_nodes": [
+          "/dev/dri/renderD128",
+          "/dev/dri/renderD129"
+        ],
+        "access": "drm_render/debugfs"
+      },
+      "detail": "No /dev/rknpu* node on this BSP; rknpu driver evidence present (version/devfreq), NPU reached via DRM render nodes.",
+      "hint": null
+    },
+    {
+      "id": "npu_driver",
+      "title": "NPU driver",
+      "status": "pass",
+      "value": "0.9.8",
+      "detail": "Version from /sys/kernel/debug/rknpu/version.",
+      "hint": null
+    },
+    {
+      "id": "npu_load",
+      "title": "NPU load",
+      "status": "pass",
+      "value": {
+        "core0": 0.0,
+        "core1": 0.0
+      },
+      "detail": "Per-core utilization in percent.",
+      "hint": null
+    },
+    {
+      "id": "npu_freq",
+      "title": "NPU frequency",
+      "status": "pass",
+      "value": [
+        {
+          "device": "27700000.npu",
+          "current_hz": 950000000,
+          "governor": "rknpu_ondemand"
+        }
+      ],
+      "detail": "Governor is recorded without judgment; missing frequency/governor is skipped.",
+      "hint": null
+    },
+    {
+      "id": "rknn_runtime",
+      "title": "RKNN runtime",
+      "status": "pass",
+      "value": {
+        "present": true,
+        "version": "2.3.2",
+        "paths": [
+          "/lib/librknnrt.so",
+          "/usr/lib/librknnrt.so",
+          "/usr/lib64/librknnrt.so"
+        ]
+      },
+      "detail": "Read explicit runtime version markers only; unknown when unavailable.",
+      "hint": null
+    },
+    {
+      "id": "thermal",
+      "title": "Thermal zones",
+      "status": "pass",
+      "value": [
+        {
+          "zone": "thermal_zone0",
+          "type": "soc-thermal",
+          "temperature_c": 40.692
+        },
+        {
+          "zone": "thermal_zone1",
+          "type": "bigcore-thermal",
+          "temperature_c": 41.615
+        },
+        {
+          "zone": "thermal_zone2",
+          "type": "little-core-thermal",
+          "temperature_c": 41.615
+        },
+        {
+          "zone": "thermal_zone3",
+          "type": "ddr-thermal",
+          "temperature_c": 40.692
+        },
+        {
+          "zone": "thermal_zone4",
+          "type": "npu-thermal",
+          "temperature_c": 40.692
+        },
+        {
+          "zone": "thermal_zone5",
+          "type": "gpu-thermal",
+          "temperature_c": 40.692
+        }
+      ],
+      "detail": "Warn at >=75 C; fail at >=85 C.",
+      "hint": null
+    },
+    {
+      "id": "mpp",
+      "title": "MPP video acceleration",
+      "status": "pass",
+      "value": {
+        "present": true
+      },
+      "detail": "/dev/mpp_service; needed only for relevant video/image workloads.",
+      "hint": null
+    },
+    {
+      "id": "rga",
+      "title": "RGA acceleration",
+      "status": "pass",
+      "value": {
+        "present": true
+      },
+      "detail": "/dev/rga; needed only for relevant video/image workloads.",
+      "hint": null
+    },
+    {
+      "id": "video_devices",
+      "title": "Video devices",
+      "status": "pass",
+      "value": {
+        "count": 2,
+        "paths": [
+          "/dev/video-dec0",
+          "/dev/video-enc0"
+        ]
+      },
+      "detail": "",
+      "hint": null
+    },
+    {
+      "id": "python_env",
+      "title": "Python environment",
+      "status": "pass",
+      "value": {
+        "python": "3.11.2",
+        "modules": {
+          "rknnlite": {
+            "present": false,
+            "version": "unknown",
+            "reason": "module absent"
+          },
+          "cv2": {
+            "present": false,
+            "version": "unknown",
+            "reason": "module absent"
+          }
+        }
+      },
+      "detail": "Running Python environment, including with --root; optional absence is informational.",
+      "hint": null
+    }
+  ]
+}

@@ -5,6 +5,7 @@
 [![tests](https://github.com/anguoyang/rk-edge-doctor/actions/workflows/ci.yml/badge.svg)](https://github.com/anguoyang/rk-edge-doctor/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue.svg)](pyproject.toml)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/anguoyang/badge.svg)](https://hub.xerj.org/contributors/anguoyang)
 
 Offline health checks for Rockchip boards, starting with RK3588/RK3588S. Finding
 missing NPU devices, unreadable drivers, memory pressure and overheating should

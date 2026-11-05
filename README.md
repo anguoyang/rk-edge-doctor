@@ -189,4 +189,6 @@ RK Edge Doctor is an open-source project associated with Site AI Gateway: https:
 
 Ecosystem list: [awesome-rockchip](https://github.com/anguoyang/awesome-rockchip) — a curated, actively maintained list of Rockchip boards, tools and projects.
 
+**The Doctor family:** RK Edge Doctor covers the board/hardware layer. Its sibling [InferDoctor](https://github.com/anguoyang/inferdoctor) covers the application layer — evidence-driven diagnosis and regression gating for LLM apps (RAG, agents, inference), with the same creed: find the first broken layer, never guess past missing evidence.
+
 Licensed under [Apache-2.0](LICENSE).

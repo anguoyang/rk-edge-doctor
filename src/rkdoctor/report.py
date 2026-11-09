@@ -79,11 +79,15 @@ def write_reports(report: dict, json_path: Optional[str] = None,
         Path(html_path).write_text(render_html(report), encoding="utf-8")
 
 
+def verdict_line(report: dict, paths: list) -> str:
+    return report["verdict"] + " | Reports: " + (", ".join(paths) if paths else "none requested")
+
+
 def terminal_report(report: dict, paths: list) -> str:
     symbols = {"pass": "+", "warn": "!", "fail": "X", "skip": "-"}
     lines = [symbols[item["status"]] + " " + item["id"] + ": " + display(item["value"])
              for item in report["checks"]]
-    lines.append(report["verdict"] + " | Reports: " + (", ".join(paths) if paths else "none requested"))
+    lines.append(verdict_line(report, paths))
     return "\n".join(lines)
 
 

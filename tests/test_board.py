@@ -306,6 +306,44 @@ class CliTests(unittest.TestCase):
             main(["board", "--typo"])
         self.assertEqual(error.exception.code, 2)
 
+    def test_board_quiet_mode(self):
+        values = {"machine": "aarch64", "release": "6.1.0-fixture", "node": "test-host"}
+        with patch.object(Probe, "system", side_effect=values.get), \
+                patch.object(Probe, "disk_usage", return_value=Usage(1000, 500, 500)), \
+                patch.object(Probe, "python_module", return_value={"present": False, "version": "unknown"}):
+            quiet_no_reports = io.StringIO()
+            with redirect_stdout(quiet_no_reports):
+                status = main(["board", "--quiet", "--root", str(FIXTURES / "fake_rk3588")])
+            self.assertEqual(status, 0)
+            self.assertEqual(quiet_no_reports.getvalue().splitlines(),
+                             ["HEALTHY | Reports: none requested"])
+            for check_id in IDS:
+                self.assertNotIn(check_id + ":", quiet_no_reports.getvalue())
+
+            with tempfile.TemporaryDirectory(dir=REPO / "tests") as directory:
+                json_path = Path(directory) / "report.json"
+                html_path = Path(directory) / "report.html"
+                quiet_out = io.StringIO()
+                with redirect_stdout(quiet_out):
+                    status = main(["board", "--quiet", "--root", str(FIXTURES / "fake_rk3588"),
+                                   "--json", str(json_path), "--html", str(html_path)])
+                self.assertEqual(status, 0)
+                quiet_lines = quiet_out.getvalue().splitlines()
+                self.assertEqual(quiet_lines, [f"HEALTHY | Reports: {json_path}, {html_path}"])
+                for check_id in IDS:
+                    self.assertNotIn(check_id + ":", quiet_out.getvalue())
+                self.assertEqual(len(json.loads(json_path.read_text())["checks"]), 16)
+                self.assertIn(FOOTER, html_path.read_text())
+
+                normal_out = io.StringIO()
+                with redirect_stdout(normal_out):
+                    status = main(["board", "--root", str(FIXTURES / "fake_rk3588"),
+                                   "--json", str(json_path), "--html", str(html_path)])
+                self.assertEqual(status, 0)
+                normal_lines = normal_out.getvalue().splitlines()
+                self.assertEqual(len(normal_lines), 17)
+                self.assertEqual(normal_lines[-1], quiet_lines[0])
+
     def test_cli_reports_for_all_fixtures(self):
         with tempfile.TemporaryDirectory(dir=REPO / "tests") as directory:
             for fixture in ("fake_rk3588", "fake_x86", "fake_rk_no_driver"):

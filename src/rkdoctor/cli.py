@@ -13,8 +13,9 @@ from .checks.rtsp import diagnose_rtsp
 from .onnx_parse import OnnxParseError, parse_onnx
 from .probe import Probe
 from .report import (build_report, terminal_convert_report, terminal_model_report,
-                     terminal_report, terminal_rtsp_report, write_convert_reports,
-                     write_model_reports, write_reports, write_rtsp_reports)
+                     terminal_report, terminal_rtsp_report, verdict_line,
+                     write_convert_reports, write_model_reports, write_reports,
+                     write_rtsp_reports)
 
 
 def main(argv: Optional[List[str]] = None) -> int:
@@ -25,6 +26,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     board.add_argument("--json", metavar="PATH", help="Write schema 1 JSON")
     board.add_argument("--html", metavar="PATH", help="Write a standalone HTML report")
     board.add_argument("--root", default="/", metavar="DIR", help="Redirect probe files into DIR")
+    board.add_argument("--quiet", action="store_true", help="Print only verdict and report paths")
     model = commands.add_parser("model", help="Diagnose a converted .rknn model (CPU fallback, latency)")
     model.add_argument("model_path", metavar="MODEL", help="Path to the .rknn model file")
     model.add_argument("--runs", type=int, default=20, help="Measured inference runs (default 20)")
@@ -167,5 +169,6 @@ def main(argv: Optional[List[str]] = None) -> int:
     except (OSError, ValueError) as error:
         print("rkdoctor: cannot write report: " + str(error), file=sys.stderr)
         return 1
-    print(terminal_report(report, [path for path in (args.json, args.html) if path]))
+    paths = [path for path in (args.json, args.html) if path]
+    print(verdict_line(report, paths) if args.quiet else terminal_report(report, paths))
     return 0

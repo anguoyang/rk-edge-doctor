@@ -77,7 +77,7 @@ RK3588 假树时，架构检查仍然 warn；测试会替换这些实时值来�
 不能把包含 skip 的 HEALTHY 当作所有硬件都已验收。
 
 报告包含工具版本、带时区时间、hostname、SoC、发行版和内核，不采集板卡序列号。
-HTML 是内联 CSS 的单文件，无外部资源或 JavaScript。逐项说明见 [docs/checks.md](docs/checks.md)。
+HTML 是内联 CSS 的单文件，无外部资源或 JavaScript。逐项说明见 [docs/checks.zh-CN.md](docs/checks.zh-CN.md)。
 
 ## 开发与测试
 

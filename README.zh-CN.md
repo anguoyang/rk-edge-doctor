@@ -111,6 +111,4 @@ PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -
   LIKELY_TO_FAIL）、`convert recipe` 生成官方 Toolkit2 转换脚本（只生成不执行）、
   `convert verify` 转后验收（复用 model 诊断）。
 
-RK Edge Doctor 是与 Site AI Gateway 关联的开源项目：https://site-ai-gateway.com/open-source/rk-edge-doctor/
-
 许可证：[Apache-2.0 全文](LICENSE)。

@@ -186,8 +186,6 @@ Rockchip library. CI runs pytest on Python 3.9 and 3.12.
   `convert check` (ONNX pre-flight), `convert recipe` (Toolkit2 script
   generation), `convert verify` (post-conversion acceptance).
 
-RK Edge Doctor is an open-source project associated with Site AI Gateway: https://site-ai-gateway.com/open-source/rk-edge-doctor/
-
 Ecosystem list: [awesome-rockchip](https://github.com/anguoyang/awesome-rockchip) — a curated, actively maintained list of Rockchip boards, tools and projects.
 
 **The Doctor family:** RK Edge Doctor covers the board/hardware layer. Its sibling [InferDoctor](https://github.com/anguoyang/inferdoctor) covers the application layer — evidence-driven diagnosis and regression gating for LLM apps (RAG, agents, inference), with the same creed: find the first broken layer, never guess past missing evidence.

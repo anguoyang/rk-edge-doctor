@@ -79,6 +79,23 @@ RK3588 假树时，架构检查仍然 warn；测试会替换这些实时值来�
 报告包含工具版本、带时区时间、hostname、SoC、发行版和内核，不采集板卡序列号。
 HTML 是内联 CSS 的单文件，无外部资源或 JavaScript。逐项说明见 [docs/checks.zh-CN.md](docs/checks.zh-CN.md)。
 
+## 第三方验证
+
+板卡厂商自家团队（ArmSoM，报告内已披露身份）用 rk-edge-doctor 0.4.0
+在真机上的独立实测：
+
+| 板卡 | SoC | 结果 |
+| --- | --- | --- |
+| ArmSoM CM7s | RK3588S | 16/16 项检查 HEALTHY（sudo 运行） |
+| ArmSoM CM5 | RK3576 | 16/16 项检查 HEALTHY（sudo 运行） |
+
+普通用户运行时两块板均为 14 通过 + 2 跳过：`npu_driver` 与 `npu_load`
+需要 root 权限读 `/sys/kernel/debug`，sudo 下均通过。完整报告（含原始输出）：
+
+[CM7s 报告](https://github.com/anguoyang/rk-edge-doctor/issues/7)
+
+[CM5 报告](https://github.com/anguoyang/rk-edge-doctor/issues/7#issuecomment-6651577983)
+
 ## 开发与测试
 
 本地已有 pytest 时运行：

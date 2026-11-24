@@ -152,6 +152,22 @@ in terminal output and in both reports. Reports are schema 1 JSON
 against a synthetic local stream on an RK3588 board. Digest and Basic auth are
 supported.
 
+## Third-party validation
+
+Independent runs by a board vendor's own team (ArmSoM, disclosed in the
+reports themselves), using rk-edge-doctor 0.4.0 on real hardware:
+
+| Board | SoC | Result |
+| --- | --- | --- |
+| ArmSoM CM7s | RK3588S | 16/16 checks HEALTHY (sudo run) |
+| ArmSoM CM5 | RK3576 | 16/16 checks HEALTHY (sudo run) |
+
+As an ordinary user both boards score 14 pass + 2 skips: `npu_driver` and
+`npu_load` need root access to `/sys/kernel/debug`, and both pass under sudo.
+Full reports, including raw output:
+[CM7s report](https://github.com/anguoyang/rk-edge-doctor/issues/7) ·
+[CM5 report](https://github.com/anguoyang/rk-edge-doctor/issues/7#issuecomment-6651577983)
+
 ## Development
 
 With pytest already available:
